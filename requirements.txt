@@ -1,0 +1,7 @@
+elasticsearch==2.1.0
+pytest
+pylint
+pytest-cov
+boto3
+mock
+pyspark
