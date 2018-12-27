@@ -10,7 +10,6 @@ all: env lint test
 
 env:
 	virtualenv -p python3 venv
-	npm install
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
 
