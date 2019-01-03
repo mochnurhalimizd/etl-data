@@ -16,6 +16,12 @@ from urllib.parse import parse_qs
 import urllib.parse
 import json
 import base64
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from helper.geoip_helper import geoip
 
 # from pyspark.sql.functions import udf
 
@@ -24,7 +30,7 @@ import base64
 
 class mainProcess():
     """
-    docstring here
+    Main process for extract and parse data
     """
 
     def __init__(self):
@@ -40,6 +46,9 @@ class mainProcess():
         print(self.sessionID)
         print(self.visitorID)
         print(self.userID)
+
+        geo = geoip()
+        print(geo.get_city_from_ip())
 
     def get_dataset(self):
         """
