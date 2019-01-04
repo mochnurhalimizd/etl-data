@@ -8,7 +8,7 @@ Class String Helper
 import base64
 
 
-class StringHelper(object):
+class StringHelper:
     """
     Helper for transform string
     """
