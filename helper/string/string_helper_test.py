@@ -23,3 +23,25 @@ def test_decode_base64():
     response = json.loads(StringHelper.decode_base64(sample_string))
 
     assert response.get('data')[0]['userId'] == 'rayaveronica'
+
+
+def test_url_to_dict():
+    """
+    test case for method url_to_dict in String Helper
+    """
+
+    sample_string = """/i?e=se&se_ca=Property"""
+    response = StringHelper.url_to_dict(sample_string)
+
+    assert response.get('e')[0] == 'se'
+
+
+def test_test():
+    """
+    test case for method test in String Helper
+    """
+
+    sample_string = """e=se"""
+    response = StringHelper.test(sample_string, '=')
+
+    assert len(response) == 2
