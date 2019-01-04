@@ -13,7 +13,7 @@ env:
 	virtualenv -p python3 venv
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
-	geoip
+	make geoip
 
 dev:
 
@@ -22,7 +22,7 @@ dev:
 geoip: 
 	sudo mkdir -p $(DIR)
 	sudo wget https://s3-ap-southeast-1.amazonaws.com/files.dev.urbanindo.com/2018/03/GeoIP2-City_20180227/GeoIP2-City.mmdb -O $(DIR)/GeoIP2-City.mmdb
-	
+
 
 
 clean:
