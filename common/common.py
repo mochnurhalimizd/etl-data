@@ -46,9 +46,7 @@ class mainProcess():
         print(self.sessionID)
         print(self.visitorID)
         print(self.userID)
-
-        geo = geoip()
-        geo.get_city_from_ip()
+        print(self.url)
 
     def get_dataset(self):
         """
@@ -96,6 +94,11 @@ class mainProcess():
         self.userID = self.parse_user_ID(
             "/i?e=se&uid=90394039430&se_ca=Property&se_ac=Visit&se_la=608919551&tv=js-2.5.1&tna=cf&aid=Urbanindo%20Desktop%20Site&p=web&tz=Asia%2FJakarta&lang=en-US&cs=UTF-8&f_pdf=1&f_qt=0&f_realp=1&f_wma=1&f_dir=0&f_fla=1&f_java=0&f_gears=0&f_ag=0&res=1366x768&cd=24&cookie=1&eid=72418977-de08-4244-971e-e1e14b91bbf4&dtm=1468405258160&vp=1366x595&ds=1349x741&vid=1&sid=9a469ec8-c034-45ab-8de9-a56c084d4301&duid=adc1cb0251da614d&fp=2867200236&refr=http%3A%2F%2Fwww.urbanindo.com%2Fezy%3Ftype%3Dlisting%26param%3D608919551%26gclid%3DCNfPw8WZ8M0CFcoTaAodM80Cew&url=http%3A%2F%2Fwww.urbanindo.com%2Fezy%3Ftype%3Dlisting%26param%3D608919551&cx=eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy9jb250ZXh0cy9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6W3sidXNlclR5cGUiOiJHdWVzdCIsInVzZXJJZCI6InJheWF2ZXJvbmljYSIsImxvY2F0aW9uIjoiQmFuZHVuZyJ9XX0=",
             "uid"
+        )
+
+        self.url = self.parse_event(
+            "/i?e=se&se_ca=Property&se_ac=Visit&se_la=608919551&tv=js-2.5.1&tna=cf&aid=Urbanindo%20Desktop%20Site&p=web&tz=Asia%2FJakarta&lang=en-US&cs=UTF-8&f_pdf=1&f_qt=0&f_realp=1&f_wma=1&f_dir=0&f_fla=1&f_java=0&f_gears=0&f_ag=0&res=1366x768&cd=24&cookie=1&eid=72418977-de08-4244-971e-e1e14b91bbf4&dtm=1468405258160&vp=1366x595&ds=1349x741&vid=1&sid=9a469ec8-c034-45ab-8de9-a56c084d4301&duid=adc1cb0251da614d&fp=2867200236&refr=http%3A%2F%2Fwww.urbanindo.com%2Fezy%3Ftype%3Dlisting%26param%3D608919551%26gclid%3DCNfPw8WZ8M0CFcoTaAodM80Cew&url=http%3A%2F%2Fwww.urbanindo.com%2Fezy%3Ftype%3Dlisting%26param%3D608919551&cx=eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy9jb250ZXh0cy9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6W3sidXNlclR5cGUiOiJHdWVzdCIsInNJZCI6IjE3NDkzZmU2ODNiNGRkNGMyYjNiZjUzODcyNjkzYjJiIn1dfQ",
+            'url'
         )
 
     def parse_data_set(self):
