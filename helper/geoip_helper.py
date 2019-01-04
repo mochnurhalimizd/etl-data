@@ -10,21 +10,35 @@ This module is used for filter snowplow event to count property visit.
    :platform: Unix, Windows
 .. moduleauthor:: Moch Nurhalimi Zaini D <moch.nurhalimi@gmail.com>
 """
-from geoip import open_database
+import geoip2.database
 
 
 class geoip(object):
     """
-    Geo Ip class for convert ip to location
+    Geo Ip class for convert ip to location.
     """
 
-    def __init__(self):
+    def __init__(self, ipaddress):
         """Constructor
+        
+        :param ipadress (string) ip address from event.
         """
-        self.db = open_database('/usr/share/geoip2/GeoIP2-City.mmdb')
 
-    def get_city_from_ip(self):
+        self.ipaddress = ipaddress
+        self.db = geoip2.database.Reader('/usr/share/geoip2/GeoIP2-City.mmdb')
+
+    def get_locality_from_ip(self):
         """
-        Get city from ip
+        Get locality from ip address.
+
+        Usage
+        self.get_locality_from_ip('string ipaddress')
+
+        :param ipadress (string) ip address from event.
         """
-        return self.db.lookup('172.68.133.151')
+        response = self.db.city(self.ipaddress)
+        return ', '.join([
+            response.country.name if response.country is not None else '',
+            response.subdivisions.most_specific.names['de'] if response.subdivisions is not None else '',
+            response.city.name if response.city is not None else ''
+        ])

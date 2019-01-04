@@ -1,4 +1,4 @@
-
+#!/bin/bash
 VENVBIN=./venv/bin
 NODEBIN=./node_modules/.bin
 PYTHON=$(VENVBIN)/python
@@ -17,7 +17,7 @@ env:
 
 dev:
 
-	. ./venv/bin/activate
+	source venv/bin/activate
 
 geoip: 
 	sudo mkdir -p $(DIR)

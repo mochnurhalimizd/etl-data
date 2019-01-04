@@ -48,7 +48,7 @@ class mainProcess():
         print(self.userID)
 
         geo = geoip()
-        print(geo.get_city_from_ip())
+        geo.get_city_from_ip()
 
     def get_dataset(self):
         """

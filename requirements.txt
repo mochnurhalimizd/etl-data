@@ -5,6 +5,4 @@ pytest-cov
 boto3
 mock
 pyspark
-urlparse
-python-geoip
-
+geoip2
