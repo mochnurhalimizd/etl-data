@@ -13,21 +13,19 @@ This module is used for filter snowplow event to count property visit.
 import geoip2.database
 
 
-class geoip(object):
+class geoip:
     """
     Geo Ip class for convert ip to location.
     """
 
-    def __init__(self, ipaddress):
+    def __init__(self, db_geoip):
         """Constructor
         
         :param ipadress (string) ip address from event.
         """
-
-        self.ipaddress = ipaddress
         self.db = geoip2.database.Reader('/usr/share/geoip2/GeoIP2-City.mmdb')
 
-    def get_locality_from_ip(self):
+    def get_locality_from_ip(self, ipaddress):
         """
         Get locality from ip address.
 
@@ -36,9 +34,17 @@ class geoip(object):
 
         :param ipadress (string) ip address from event.
         """
-        response = self.db.city(self.ipaddress)
-        return ', '.join([
-            response.country.name if response.country is not None else '',
-            response.subdivisions.most_specific.names['de'] if response.subdivisions is not None else '',
-            response.city.name if response.city is not None else ''
-        ])
+        response = self.db.city(ipaddress)
+        return ', '.join(
+            [
+                response.country.name if response.country is not None else '',
+                response.subdivisions.most_specific.names['de']
+                if response.subdivisions is not None else '',
+                response.city.name if response.city is not None else ''
+            ]
+        )
+
+
+if __name__ == "__main__":
+    geoip = geoip()
+    print(geoip.get_locality_from_ip('114.125.79.98'))
