@@ -10,6 +10,7 @@ DIR=/usr/share/geoip2
 all: env lint test
 
 env:
+	cp ./etc/git-hooks/pre-commit ./.git/hooks/pre-commit
 	virtualenv -p python3 venv
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
@@ -31,8 +32,7 @@ clean:
 	rm -rf vendored
 
 lint:
-	$(PYLINT) meta_tag/
-	$(PYLINT) handler.py
+	$(PYLINT) --ignore=venv *
 
 test: 
 	pytest meta_tag/test_generate_meta.py 

@@ -14,7 +14,6 @@ This module is used for filter snowplow event to count property visit.
 import os
 import sys
 import json
-import base64
 import urllib.parse
 
 from pyspark.sql import SparkSession
@@ -151,6 +150,8 @@ class mainProcess():
             urllib.parse.unquote(self.parse_event(path, 'cx'))
         )
         context_string = context_string.replace('\n', ' ').replace('\r', '')
+
+        print(context_string)
 
         return json.loads(StringHelper.decode_base64(context_string))
 
