@@ -1,3 +1,15 @@
+#!/bin/usr/python
+# -*- coding: utf-8 -*-
+"""Module Extract from tracker raw data and parser, load to tracker dataframe (Py).
+
+`Python Styling Guide <https://www.python.org/dev/peps/pep-0008/>`
+`Docstring Guide <https://docs.python.org/devguide/documenting.html>`
+
+
+   :platform: Unix, Windows
+.. moduleauthor:: Moch.Nurhalimi Zaini D <moch.nurhalimi@gmail.com>
+"""
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
@@ -58,6 +70,8 @@ event_userID = udf(lambda path: parse_userID(path, 'uid'), StringType())
 event_platform_type = udf(lambda path: parse_event(path, 'p'), StringType())
 event_userID = udf(lambda path: parse_userID(path, 'uid'), StringType())
 event_aid = udf(lambda path: parse_event(path, 'aid'), StringType())
+event_url = udf(lambda path: parse_event(path, 'url'), StringType())
+event_refr = udf(lambda path: parse_event(path, 'refr'), StringType())
 
 # Load or store data frame tracker have parserd to result bucker
 df_trackers.select(
@@ -68,6 +82,8 @@ df_trackers.select(
     event_sesionID('path').alias('event_sessionID'),
     event_visitorID('path').alias('event_visitorID'),
     event_platform_type('path').alias('event_platform_type'),
-    event_aid('path').alias('event_aid')
+    event_aid('path').alias('event_aid'),
+    event_url('path').alias('event_url'),
+    event_refr('path').alias('event_refr')
     # event_userID('path').alias('event_userID'),
 ).write.parquet(config.DATA_FRAME_TRACKER_SOURCE)
