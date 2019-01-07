@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 from helper.parser_helper import parser
-from helper.geoip_helper import geoip
+import config
 
 spark = SparkSession.builder.appName("Spark for ETL data 99.co ID").config(
     "spark.some.config.option", "some-value"
@@ -10,19 +10,14 @@ spark = SparkSession.builder.appName("Spark for ETL data 99.co ID").config(
 
 # Extract Dataset
 df_users = spark.read.csv("test/resources/user.csv", header=True)
-df_trackers = spark.read.json("test/resources/tracker.txt")
+df_trackers = spark.read.json(config.TRACKER_DATA_SOURCE)
 
+# Instantiate parser module
 parser = parser()
-
-# geoip = geoip()
 
 
 def parse_event(path, event):
     return parser.parse_event(path, event)
-
-
-def parse_ip_to_locality(ipaddress):
-    return geoip.get_locality_from_ip(ipaddress)
 
 
 def parse_userID(path, event):
@@ -45,17 +40,15 @@ def get_userid_from_context_array(path):
 
 
 def get_user_id(user_name):
-    user_id = df_users.filter(df_users.username == 'rayaveronica'
-                              ).select('id').collect()
-    print(user_id)
-    return 'Waduk'
+    userID = df_users.filter(df_users.username == 'rayaveronica'
+                             ).select('id').collect()
 
-    # if len(userID) >= 1:
-    #     return userID[0][0]
+    if len(userID) >= 1:
+        return userID[0][0]
 
 
 # Create User definition function
-event_country_from_ip = udf(lambda ip: parse_ip_to_locality(ip), StringType())
+# event_country_from_ip = udf(lambda ip: parse_ip_to_locality(ip), StringType())
 event_category = udf(lambda path: parse_event(path, 'se_ca'), StringType())
 event_action = udf(lambda path: parse_event(path, 'se_ac'), StringType())
 event_label = udf(lambda path: parse_event(path, 'se_la'), StringType())
@@ -66,8 +59,9 @@ event_platform_type = udf(lambda path: parse_event(path, 'p'), StringType())
 event_userID = udf(lambda path: parse_userID(path, 'uid'), StringType())
 event_aid = udf(lambda path: parse_event(path, 'aid'), StringType())
 
+# Load or store data frame tracker have parserd to result bucker
 df_trackers.select(
-    'ip',
+    'ip', 'remote', 'time',
     event_category('path').alias('event_category'),
     event_action('path').alias('event_action'),
     event_label('path').alias('event_label'),
@@ -76,4 +70,4 @@ df_trackers.select(
     event_platform_type('path').alias('event_platform_type'),
     event_aid('path').alias('event_aid')
     # event_userID('path').alias('event_userID'),
-).show()
+).write.parquet(config.DATA_FRAME_TRACKER_SOURCE)
