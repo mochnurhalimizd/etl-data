@@ -21,6 +21,7 @@ from urllib.parse import parse_qs
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from helper.string.string_helper import StringHelper
+from helper.config.config_helper import translate_type
 
 
 class Parser:
@@ -57,12 +58,44 @@ class Parser:
         if parse_qs(path).get(event) is not None:
             return parse_qs(path).get(event)[0]
         return None
-  
-    def parse_event_search_listing_type(self, param):
+
+    def parse_event_search(self, event_search, params):
+        """
+        Parser event search url.
+        """
+        return {
+            'listing_type': self.parse_event_search_listing_type,
+            'property_type': self.parse_event_search_property_type,
+            'rent_type': lambda param, event_search: self.regex_parser(
+                r"\/rentType_(\w+)",
+                param,
+                event_search
+            ),
+            'price_evaluation': lambda param, event_search: self.regex_parser(
+                r"\/hasPriceEvaluation_([0-9\,]+)",
+                param,
+                event_search
+            ),
+            'certification_type':
+            lambda param, event_search: self.regex_parser(
+                r"\/certificationType_([0-9\,]+)",
+                param,
+                event_search
+            )
+        }[event_search](params, event_search)
+
+    def regex_parser(self, regex_exp, param, event_search):
+        """
+        Regex parser for get param event search
+        """
+        params = re.findall(regex_exp, param)
+        for value in params:
+            return self.clean_standard_type('_'.join([event_search, value]))
+
+    def parse_event_search_listing_type(self, param, _):
         """
         Parser listing type from url
         """
-        param = str(param)
         params = re.findall(r"\/listingType_(\w+)", param)
         if not params:
             params = re.findall(
@@ -75,30 +108,18 @@ class Parser:
         Clean listing type
         """
         listing_type = listing_type.lower()
-        return self.clean_standard_listing_type(
+        return self.clean_standard_type(
             listing_type.replace('di', "").replace("%20", " ")
         )
-
-    @staticmethod
-    def clean_standard_listing_type(listing_type):
-        """
-        Standardlization listing type.
-        """
-        if listing_type == "jual":
-            return "Sale"
-        if listing_type == "sewa":
-            return "Rent"
-        return 'Any'
 
     def parse_event_search_property_type(self, param):
         """
         Parser property type from url
         """
-        param = str(param)
         params = re.findall(r"\/propertyType_([A-Za-z_\-\s\%20\,]+)", param)
         if not params:
             params = re.findall(
-                r"vila|properti|rumah|apartemen|ruko|komersial|tanah|kost",
+                r"vila|properti|rumah|apartemen|ruko|komersial|tanah|kost|ruang-kantor|gudang|hotel|pabrik|kios|kiosk|factory|gedung-bertingkat|kondotel|condotel|toko|store",
                 param)
         for property_type in params:
             return self.clean_property_type(property_type)
@@ -108,36 +129,18 @@ class Parser:
         Clean Property type
         """
         property_type = property_type.lower()
-        return self.clean_standard_property_type(
+        return self.clean_standard_type(
             property_type.replace("-", " ").replace("%20", " ")
         )
 
-    def clean_standard_property_type(self, property_type):
+    def clean_standard_type(self, event_type=None):
         """
-        Standardlization listing type.
+        Standardrization listing type.
         """
-        return self.get_property_type(property_type)
-    
-    @staticmethod
-    def get_property_type(property_type):
-        """
-        Get property type for standarization.
-        """
-        types = {
-            'rumah': 'House',
-            'apartemen': 'Apartment',
-            'ruko': 'Ruko',
-            'vila': 'Villa',
-            'komersial': 'Commercial',
-            'tanah': 'Land',
-            'kost': 'Kost'
-        }
-
-        return types.get(property_type, 'Property')
+        return translate_type(event_type)
 
 
-# if __name__ == "__main__":
-#     parser = parser()
-#     # print(parser.parse_event_search_listing_type('https://www.99.co/id/cari/Rumah-disewa-di-Indonesia/location_indonesia/venueId_1006/marketType_0'))
-#     print(parser.clean_standard_property_type('rumahd'))
-
+if __name__ == "__main__":
+    Parser = Parser()
+    event_param = Parser.parse_event_search('listing_type', 'https://www.99.co/id/cari/Rumah-dijual-di-Probolinggo%2C-Jawa-Timur-min-100jt-maks-5mily/location_probolinggo,%20jawa%20timur/listingType_sale/propertyType_house/radius_-1/harga_100000000,5000000000/certificationType_0/marketType_0')
+    print(event_param)

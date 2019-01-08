@@ -49,4 +49,4 @@ def translate_type(event_type):
 
     conf = get_config()
 
-    return json.loads(conf.get('key', 'data')).get(event_type, 'Property')
+    return json.loads(conf.get('key', 'data')).get(event_type, 'Any')
