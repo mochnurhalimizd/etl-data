@@ -18,11 +18,12 @@ import re
 import sys
 import urllib.parse
 from urllib.parse import parse_qs
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from helper.string.string_helper import StringHelper
 
 
-class parser:
+class Parser:
     """
     Main process for extract and parse data
     """
@@ -135,8 +136,8 @@ class parser:
         return types.get(property_type, 'Property')
 
 
-if __name__ == "__main__":
-    parser = parser()
-    # print(parser.parse_event_search_listing_type('https://www.99.co/id/cari/Rumah-disewa-di-Indonesia/location_indonesia/venueId_1006/marketType_0'))
-    print(parser.clean_standard_property_type('rumahd'))
+# if __name__ == "__main__":
+#     parser = parser()
+#     # print(parser.parse_event_search_listing_type('https://www.99.co/id/cari/Rumah-disewa-di-Indonesia/location_indonesia/venueId_1006/marketType_0'))
+#     print(parser.clean_standard_property_type('rumahd'))
 
