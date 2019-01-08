@@ -13,7 +13,7 @@ class SparkHelper:
     """
 
     @staticmethod
-    def createConnection():
+    def create_connection():
         """Create connection spark.
 
         Usage
@@ -25,7 +25,7 @@ class SparkHelper:
         ).config("spark.some.config.option", "some-value").getOrCreate()
 
     @staticmethod
-    def readParquet(spark, config):
+    def read_parquet(spark, config):
         """Create parquet based on config parameter
 
         Usage
@@ -34,8 +34,10 @@ class SparkHelper:
         :param spark: (Object) Spark Session.
         :param config: (String) Directory path data frame.
         """
+        try:
+            if spark is not None:
+                return spark.read.parquet(config)
 
-        if spark is not None:
-            return spark.read.parquet(config)
-
-        return None
+            raise Exception('Spark parameter is None !!')
+        except Exception as error:
+            raise Exception(error)
