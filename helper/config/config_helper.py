@@ -8,6 +8,7 @@ https://docs.python.org/3/library/configparser.html
 """
 
 import os
+import json
 from configparser import ConfigParser
 
 
@@ -35,3 +36,17 @@ def get_config(files='config.conf'):
         return config
     except Exception as error:
         raise Exception(error)
+
+
+def translate_type(event_type):
+    """Get property from config.
+
+    Usage
+    translate_type('house / apartment / etc')
+
+    :param files: (String) key dictionary.
+    """
+
+    conf = get_config()
+
+    return json.loads(conf.get('key', 'data')).get(event_type, 'Property')
