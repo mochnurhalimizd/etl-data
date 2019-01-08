@@ -37,15 +37,7 @@ class SparkHelper:
         try:
             if spark is not None:
                 return spark.read.parquet(config)
-            else:
-                raise Exception('Spark parameter is None !!')
+
+            raise Exception('Spark parameter is None !!')
         except Exception as error:
             raise Exception(error)
-
-
-if __name__ == '__main__':
-    connection = SparkHelper.create_connection()
-    print(
-        'event_label' in SparkHelper.
-        read_parquet(connection, 'test/resources/result').columns
-    )
