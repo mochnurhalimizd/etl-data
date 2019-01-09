@@ -13,7 +13,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
-from helper.parser_helper import parser
+from helper.parser_helper import Parser
 import config
 
 spark = SparkSession.builder.appName("Spark for ETL data 99.co ID").config(

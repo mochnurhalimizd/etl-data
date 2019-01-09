@@ -81,16 +81,22 @@ class Parser:
                 r"\/certificationType_([0-9\,]+)",
                 param,
                 event_search
-            )
+            ),
+            'min_price': self.parse_min_price
         }[event_search](params, event_search)
 
-    def regex_parser(self, regex_exp, param, event_search):
+    def regex_parser(self, regex_exp, param, event_search=None):
         """
         Regex parser for get param event search
         """
+        print(event_search)
         params = re.findall(regex_exp, param)
         for value in params:
-            return self.clean_standard_type('_'.join([event_search, value]))
+            if event_search is not None:
+                return self.clean_standard_type(
+                    '_'.join([event_search, value])
+                )
+            return value
 
     def parse_event_search_listing_type(self, param, _):
         """
@@ -112,7 +118,7 @@ class Parser:
             listing_type.replace('di', "").replace("%20", " ")
         )
 
-    def parse_event_search_property_type(self, param):
+    def parse_event_search_property_type(self, param, _):
         """
         Parser property type from url
         """
@@ -138,9 +144,32 @@ class Parser:
         Standardrization listing type.
         """
         return translate_type(event_type)
+    
+    def parse_min_price(self, params, _):
+        """
+        Parse Minimal price in search param URL.
+        """
+        min_price = None
+        if self.get_price(params) is not None:
+            min_price, _ = self.get_price(params)
+            print(min_price)
+        print(self.regex_parser(r"\/MinHarga_([0-9]+)", params, _))
 
+    @staticmethod
+    def get_price(param):
+        """
+        Parse price in param.
+        """
+        params = re.findall(r"\/harga_([0-9\,]+)", param)
+        for price in params:
+            return price.split(",")
+        return None
+            
 
 if __name__ == "__main__":
     Parser = Parser()
-    event_param = Parser.parse_event_search('listing_type', 'https://www.99.co/id/cari/Rumah-dijual-di-Probolinggo%2C-Jawa-Timur-min-100jt-maks-5mily/location_probolinggo,%20jawa%20timur/listingType_sale/propertyType_house/radius_-1/harga_100000000,5000000000/certificationType_0/marketType_0')
-    print(event_param)
+    # event_param = Parser.parse_event_search('min_price', 'https://www.99.co/id/cari/Rumah-dijual-di-Probolinggo%2C-Jawa-Timur-min-100jt-maks-5mily/location_probolinggo,%20jawa%20timur/listingType_sale/propertyType_house/radius_-1/harga_100000000,5000000000/certificationType_0/marketType_0')
+    # event_param = Parser.parse_event_search('min_price', 'https://www.99.co/id/cari/Rumah-dijual-di-Probolinggo%2C-Jawa-Timur-min-100jt-maks-5mily/location_probolinggo,%20jawa%20timur/listingType_sale/propertyType_house/radius_-1/certificationType_0/marketType_0')
+    event_param = Parser.parse_event_search('min_price', 'https://www.99.co/id/cari/rumah/jualsewa/jl-pancing-medan/MinHarga_50000000')
+    # print(event_param)
+    

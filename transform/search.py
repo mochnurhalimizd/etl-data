@@ -12,14 +12,13 @@
 
 import os
 import sys
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from helper.parser_helper import Parser
-from helper.spark.spark_helper import SparkHelper
-import config
+from helper.parser_helper import Parser  # noqa
+from helper.spark.spark_helper import SparkHelper  # noqa
+from helper.config.config_helper import get_config  # noqa
 
 
 class SearchTracker:
@@ -28,8 +27,9 @@ class SearchTracker:
     """
 
     def __init__(self):
-        self.connection = SparkHelper.createConnection()
+        self.connection = SparkHelper.create_connection()
         self.parser = Parser()
+        self.config = get_config()
 
     @staticmethod
     def get_udf(key, parse):
@@ -42,8 +42,8 @@ class SearchTracker:
         """
         Get Tracker parquet
         """
-        return SparkHelper.readParquet(
-            self.connection, config.DATA_FRAME_TRACKER_SOURCE
+        return SparkHelper.read_parquet(
+            self.connection, self.config.get('data_source', 'result')
         )
 
     def main(self):
