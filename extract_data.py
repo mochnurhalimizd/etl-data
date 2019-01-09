@@ -14,7 +14,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 from helper.parser_helper import Parser
-import config
+from helper.config.config_helper import get_config
+
+config = get_config()
 
 spark = SparkSession.builder.appName("Spark for ETL data 99.co ID").config(
     "spark.some.config.option", "some-value"
@@ -22,14 +24,14 @@ spark = SparkSession.builder.appName("Spark for ETL data 99.co ID").config(
 
 # Extract Dataset
 df_users = spark.read.csv("test/resources/user.csv", header=True)
-df_trackers = spark.read.json(config.TRACKER_DATA_SOURCE)
+df_trackers = spark.read.json(config.get('data_source', 'result'))
 
 # Instantiate parser module
-parser = parser()
+parser_module = Parser()
 
 
 def parse_event(path, event):
-    return parser.parse_event(path, event)
+    return parser_module.parse_event(path, event)
 
 
 def parse_userID(path, event):
