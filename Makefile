@@ -36,3 +36,7 @@ lint:
 
 test: 
 	pytest meta_tag/test_generate_meta.py 
+
+extract_data:
+	rm -rf test/resources/result/
+	python extract_data.py

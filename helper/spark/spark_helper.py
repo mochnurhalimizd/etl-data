@@ -45,6 +45,24 @@ class SparkHelper:
             raise Exception(error)
 
     @staticmethod
+    def read_json(spark, config):
+        """Create read data from csv based on config parameter
+
+        Usage
+        SparkHelper.read_parquet()
+
+        :param spark: (Object) Spark Session.
+        :param config: (String) Directory path data frame.
+        """
+        try:
+            if spark is not None:
+                return spark.read.json(config)
+
+            raise Exception('Spark parameter is None !!')
+        except Exception as error:
+            raise Exception(error)
+
+    @staticmethod
     def get_udf(key, parse):
         """
         Get User definition function for transform data search tracker

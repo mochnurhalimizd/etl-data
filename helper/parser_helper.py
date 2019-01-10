@@ -51,7 +51,7 @@ class Parser:
 
         return json.loads(StringHelper.decode_base64(context_string))
 
-    def parse_event(self, path, event):
+    def parse_event(self, event, path):
         """
         docstring here
         """
