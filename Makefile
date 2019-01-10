@@ -40,3 +40,13 @@ test:
 extract_data:
 	rm -rf test/resources/result/
 	python extract_data.py
+
+transform_search:
+	python transform/search.py
+
+transform_property:
+	python transform/property.py
+
+transform_agent:
+	python transform/agent.py
+
