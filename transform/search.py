@@ -12,8 +12,6 @@
 
 import os
 import sys
-from pyspark.sql.functions import udf
-from pyspark.sql.types import StringType
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from helper.parser_helper import Parser  # noqa
@@ -31,13 +29,6 @@ class SearchTracker:
         self.parser = Parser()
         self.config = get_config()
 
-    @staticmethod
-    def get_udf(key, parse):
-        """
-        Get User definition function for transform data search tracker
-        """
-        return udf(lambda params: parse(key, params), StringType())
-
     def get_parquet(self):
         """
         Get Tracker parquet
@@ -51,23 +42,23 @@ class SearchTracker:
         Main Class for transform tracket dataset to search dataset
         """
 
-        search_listing_type_udf = self.get_udf(
+        search_listing_type_udf = SparkHelper.get_udf(
             'listing_type', self.parser.parse_event_search
         )
 
-        search_property_type_udf = self.get_udf(
+        search_property_type_udf = SparkHelper.get_udf(
             'property_type', self.parser.parse_event_search
         )
 
-        search_rent_type_udf = self.get_udf(
+        search_rent_type_udf = SparkHelper.get_udf(
             'rent_type', self.parser.parse_event_search
         )
 
-        search_price_evaluation_udf = self.get_udf(
+        search_price_evaluation_udf = SparkHelper.get_udf(
             'price_evaluation', self.parser.parse_event_search
         )
 
-        search_certification_type_udf = self.get_udf(
+        search_certification_type_udf = SparkHelper.get_udf(
             'certification_type', self.parser.parse_event_search
         )
 
@@ -89,5 +80,4 @@ class SearchTracker:
 
 
 if __name__ == "__main__":
-    search_transform = SearchTracker()
-    search_transform.main()
+    SearchTracker().main()

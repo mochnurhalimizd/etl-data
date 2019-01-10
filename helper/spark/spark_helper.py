@@ -5,6 +5,8 @@ Class Spark Helper
 @author Irfan Andriansyah <irfan@99.co>
 """
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
 
 
 class SparkHelper:
@@ -17,7 +19,7 @@ class SparkHelper:
         """Create connection spark.
 
         Usage
-        SparkHelper.createConnection()
+        SparkHelper.create_connection()
         """
 
         return SparkSession.builder.appName(
@@ -29,7 +31,7 @@ class SparkHelper:
         """Create parquet based on config parameter
 
         Usage
-        SparkHelper.readParquet()
+        SparkHelper.read_parquet()
 
         :param spark: (Object) Spark Session.
         :param config: (String) Directory path data frame.
@@ -41,3 +43,16 @@ class SparkHelper:
             raise Exception('Spark parameter is None !!')
         except Exception as error:
             raise Exception(error)
+
+    @staticmethod
+    def get_udf(key, parse):
+        """
+        Get User definition function for transform data search tracker
+
+        Usage
+        SparkHelper.readParquet()
+
+        :param key: (String) key object.
+        :param parse: (Function) Closure callback get_udf method.
+        """
+        return udf(lambda params: parse(key, params), StringType())
