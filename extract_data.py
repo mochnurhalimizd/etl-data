@@ -57,6 +57,8 @@ class ExtractData:
 
         event_refr_udf = SparkHelper.get_udf('refr', self.parser.parse_event)
 
+        event_tz_udf = SparkHelper.get_udf('tz', self.parser.parse_event)
+
         event_category_udf = SparkHelper.get_udf(
             'se_ca', self.parser.parse_event
         )
@@ -86,8 +88,10 @@ class ExtractData:
         df_tracker = self.get_snowplow_data()
         df_tracker.select(
             event_ip_to_locality(df_tracker.ip).alias('event_ip_to_locality'),
-            df_tracker.ip,
+            df_tracker.ip.alias('event_ip'),
+            df_tracker.time.alias('event_time'),
             # event_category_udf('path').alias('event_category'),
+            # event_tz_udf('path').alias('event_tz'),
             # event_action_udf('path').alias('event_action'),
             # event_label_udf('path').alias('event_label'),
             # event_sessionid_udf('path').alias('event_sessionID'),
@@ -96,7 +100,7 @@ class ExtractData:
             # event_aid_udf('path').alias('event_aid'),
             # event_url_udf('path').alias('event_url'),
             # event_refr_udf('path').alias('event_refr')
-        ).show()
+        ).show(20, False)
         # .write.parquet(self.result)
 
 
