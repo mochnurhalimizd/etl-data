@@ -17,15 +17,13 @@ class geoip:
     """
     Geo Ip class for convert ip to location.
     """
+    
+    @staticmethod
+    def getConnection():
+        return geoip2.database.Reader('/usr/share/geoip2/GeoIP2-City.mmdb')
 
-    def __init__(self, db_geoip):
-        """Constructor
-        
-        :param ipadress (string) ip address from event.
-        """
-        self.db = geoip2.database.Reader('/usr/share/geoip2/GeoIP2-City.mmdb')
-
-    def get_locality_from_ip(self, ipaddress):
+    @staticmethod
+    def get_locality_from_ip(ipaddress):
         """
         Get locality from ip address.
 
@@ -34,15 +32,29 @@ class geoip:
 
         :param ipadress (string) ip address from event.
         """
-        response = self.db.city(ipaddress)
-        return ', '.join(
-            [
-                response.country.name if response.country is not None else '',
-                response.subdivisions.most_specific.names['de']
-                if response.subdivisions is not None else '',
-                response.city.name if response.city is not None else ''
-            ]
-        )
+        db = geoip2.database.Reader('/usr/share/geoip2/GeoIP2-City.mmdb')
+        
+        response = None
+        try:
+            response = db.city(ipaddress)
+            return ', '.join(
+                [
+                    response.country.name if response.country is not None else '',
+                    geoip.get_subdivision(response),
+                    response.city.name if response.city is not None else ''
+                ]
+            )
+        except Exception:
+            pass
+
+        return ''
+
+    @staticmethod
+    def get_subdivision(response):
+        if not response.subdivisions.most_specific.names:
+            return ''
+        else:
+            return response.subdivisions.most_specific.names.get('en')
 
 
 if __name__ == "__main__":

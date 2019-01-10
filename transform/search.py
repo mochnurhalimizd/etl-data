@@ -156,7 +156,6 @@ class SearchTracker:
             alias('event_search_param_pagination')
         ).show()
 
-
-
+        
 if __name__ == "__main__":
     SearchTracker().main()

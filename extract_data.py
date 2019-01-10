@@ -12,11 +12,14 @@
 
 import os
 import sys
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from helper.parser_helper import Parser  # noqa
 from helper.spark.spark_helper import SparkHelper  # noqa
 from helper.config.config_helper import get_config  # noqa
+from helper.geoip_helper import geoip  # noqa
 
 
 class ExtractData:
@@ -29,6 +32,9 @@ class ExtractData:
         self.parser = Parser()
         self.config = get_config()
         self.result = self.config.get('data_source', 'result')
+        self.geoip = geoip()
+        self.db_geoip = self.geoip.getConnection()
+        # self.db_geoip = self.geoip.db_geoip
 
     def get_snowplow_data(self):
         """
@@ -71,18 +77,27 @@ class ExtractData:
             'p', self.parser.parse_event
         )
 
+        # db = self.db_geoip
+
+        event_ip_to_locality = udf(
+            self.geoip.get_locality_from_ip, StringType()
+        )
+
         df_tracker = self.get_snowplow_data()
         df_tracker.select(
-            event_category_udf('path').alias('event_category'),
-            event_action_udf('path').alias('event_action'),
-            event_label_udf('path').alias('event_label'),
-            event_sessionid_udf('path').alias('event_sessionID'),
-            event_visitorid_udf('path').alias('event_visitorID'),
-            event_platform_type_udf('path').alias('event_platform_type'),
-            event_aid_udf('path').alias('event_aid'),
-            event_url_udf('path').alias('event_url'),
-            event_refr_udf('path').alias('event_refr')
-        ).write.parquet(self.result)
+            event_ip_to_locality(df_tracker.ip).alias('event_ip_to_locality'),
+            df_tracker.ip,
+            # event_category_udf('path').alias('event_category'),
+            # event_action_udf('path').alias('event_action'),
+            # event_label_udf('path').alias('event_label'),
+            # event_sessionid_udf('path').alias('event_sessionID'),
+            # event_visitorid_udf('path').alias('event_visitorID'),
+            # event_platform_type_udf('path').alias('event_platform_type'),
+            # event_aid_udf('path').alias('event_aid'),
+            # event_url_udf('path').alias('event_url'),
+            # event_refr_udf('path').alias('event_refr')
+        ).show()
+        # .write.parquet(self.result)
 
 
 if __name__ == "__main__":
