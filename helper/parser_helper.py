@@ -94,8 +94,14 @@ class Parser:
                 event_search=None),
             'min_land_size': self.parse_min_land_size,
             'max_land_size': self.parse_max_land_size,
-            'min_building_size': self.parse_min_building_size
- 
+            'min_building_size': self.parse_min_building_size,
+            'max_building_size': self.parse_max_building_size,
+            'min_numbers_bedroom': self.parse_min_number_bedrooms,
+            'max_numbers_bedroom': self.parse_max_number_bedrooms,
+            'min_numbers_bathroom': self.parse_min_number_bathrooms,
+            'max_numbers_bathroom': self.parse_max_number_bathrooms,
+            'sort_type': self.parse_sort,
+            'pagination': self.parse_pagination
         }[event_search](params, event_search)
 
     def regex_parser(self, regex_exp, param, event_search=None):
@@ -173,38 +179,120 @@ class Parser:
         """
         return translate_type(event_type)
 
+    def parse_pagination(self, params, _):
+        """
+        Parse pagination in search param URL.
+        """
+        sort_type = self.regex_parser(
+            r"page_([0-9\,]+)",
+            params,
+            event_search=None)
+        return sort_type if sort_type is not None else None
+    
+    def parse_sort(self, params, _):
+        """
+        Parse sorting type in search param URL.
+        """
+        sort_type = self.regex_parser(
+            r"sort_([0-9\,]+)",
+            params,
+            event_search=None)
+        return sort_type if sort_type is not None else self.regex_parser(
+            r"Urut_([0-9\,]+)",
+            params,
+            event_search=None)
+
+    def parse_max_number_bathrooms(self, params, _):
+        """
+        Parse Min Number of bathroom in search param URL.
+        """
+        bathroom = self.get_params(params, r"\/bathrooms_([0-9\,]+)")
+        _, max_bathroom = bathroom
+        if max_bathroom is not None:
+            return max_bathroom
+        max_bathroom = self.regex_parser(
+            r"MaksKamarMandi_([0-9\,]+)",
+            params,
+            None)
+        return max_bathroom if max_bathroom is not None else None
+
+    def parse_min_number_bathrooms(self, params, _):
+        """
+        Parse Min Number of bathroom in search param URL.
+        """
+        bathroom = self.get_params(params, r"\/bathrooms_([0-9\,]+)")
+        min_bathroom, _ = bathroom
+        if min_bathroom is not None:
+            return min_bathroom
+        min_bathroom = self.regex_parser(
+            r"MinKamarMandi_([0-9\,]+)",
+            params,
+            None)
+        return min_bathroom if min_bathroom is not None else None
+
+    def parse_min_number_bedrooms(self, params, _):
+        """
+        Parse Number of bedrooms in search param URL.
+        """
+        bedrooms = self.get_params(params, r"\/bedrooms_([0-9\,]+)")
+        min_bedroom, _ = bedrooms
+        if min_bedroom is not None:
+            return min_bedroom
+        min_bedroom = self.regex_parser(
+            r"MinKamarTidur_([0-9\,]+)",
+            params,
+            None)
+        return min_bedroom if min_bedroom is not None else None
+    
+    def parse_max_number_bedrooms(self, params, _):
+        """
+        Parse Max Number of bedrooms in search param URL.
+        """
+        bedrooms = self.get_params(params, r"\/bedrooms_([0-9\,]+)")
+        _, max_bedroom = bedrooms
+        if max_bedroom is not None:
+            return max_bedroom
+        max_bedroom = self.regex_parser(
+            r"MaksKamarTidur_([0-9\,]+)",
+            params,
+            None)
+        return max_bedroom if max_bedroom is not None else None
+
+    def parse_max_building_size(self, params, _):
+        """
+        Parse Min Building size in search param URL.
+        """
+        building_size = self.get_params(params, r"\/buildingSize_([0-9\,]+)")
+        _, max_biilding_size = building_size
+        if max_biilding_size is not None:
+            return max_biilding_size
+        max_biilding_size = self.regex_parser(
+            r"\/MaksLuasBangunan_([0-9\,]+)",
+            params,
+            None)
+        return max_biilding_size if max_biilding_size is not None else None
+
     def parse_min_building_size(self, params, _):
         """
         Parse Min Building size in search param URL.
         """
-        building_size = self.get_building_size(params)
-        print(self.get_building_size(params))
-        if building_size is not None:
-            min_biilding_size, _ = building_size
+        building_size = self.get_params(params, r"\/buildingSize_([0-9\,]+)")
+        min_biilding_size, _ = building_size
+        if min_biilding_size is not None:
             return min_biilding_size
         min_biilding_size = self.regex_parser(
             r"\/MinLuasBangunan_([0-9\,]+)",
             params,
             None)
         return min_biilding_size if min_biilding_size is not None else None
-
-    @staticmethod
-    def get_building_size(param):
-        """
-        Parse Building Size in param.
-        """
-        params = re.findall(r"\/buildingSize_([0-9\,]+)", param)
-        for building_size in params:
-            return building_size.split(",")
-        return None
     
     def parse_max_land_size(self, params, _):
         """
         Parse Maximum Land size in search param URL.
         """
-        land_size = self.get_land_size(params)
-        if land_size is not None:
-            _, max_land_size = land_size
+        land_size = self.get_params(params, r"\/landSize_([0-9\,]+)")
+        _, max_land_size = land_size
+        if max_land_size is not None:
             return max_land_size
         max_land_size = self.regex_parser(
             r"\/MaksLuasTanah_([0-9\,]+)",
@@ -216,9 +304,9 @@ class Parser:
         """
         Parse Min Land size in search param URL.
         """
-        land_size = self.get_land_size(params)
-        if land_size is not None:
-            min_land_size, _ = land_size
+        land_size = self.get_params(params, r"\/landSize_([0-9\,]+)")
+        min_land_size, _ = land_size
+        if min_land_size is not None:
             return min_land_size
         min_land_size = self.regex_parser(
             r"\/MinLuasTanah_([0-9\,]+)",
@@ -226,25 +314,13 @@ class Parser:
             None)
         return min_land_size if min_land_size is not None else None
 
-    @staticmethod
-    def get_land_size(param):
-        """
-        Parse Land Size in param.
-        """
-        params = re.findall(r"\/landSize_([0-9\,]+)", param)
-        for land_size in params:
-            min, max = land_size.split(",")
-            min = min if not min else None
-            max = max if not max else None
-            return min, max
-        return None
-
     def parse_min_price(self, params, _):
         """
         Parse Minimal price in search param URL.
         """
-        if self.get_price(params) is not None:
-            min_price, _ = self.get_price(params)
+        price = self.get_params(params, r"\/harga_([0-9\,]+)")
+        min_price, _ = price
+        if min_price is not None:
             return min_price
         min_price = self.regex_parser(
             r"\/MinHarga_([0-9]+)",
@@ -259,8 +335,9 @@ class Parser:
         """
         Parse Minimal price in search param URL.
         """
-        if self.get_price(params) is not None:
-            _, max_price = self.get_price(params)
+        price = self.get_params(params, r"\/harga_([0-9\,]+)")
+        _, max_price = price
+        if max_price is not None:
             return max_price
         max_price = self.regex_parser(
             r"\/MaksHarga_([0-9]+)",
@@ -272,20 +349,26 @@ class Parser:
             None)
 
     @staticmethod
-    def get_price(param):
+    def get_params(param, regex):
         """
         Parse price in param.
         """
-        params = re.findall(r"\/harga_([0-9\,]+)", param)
-        for price in params:
-            return price.split(",")
-        return None
-            
+        min_value, max_value = None, None
+        params = re.findall(regex, param)
+        for param in params:
+            value = param.split(",")
+            if len(value) > 1:
+                min_value, max_value = value
+                if not max_value:
+                    max_value = None
+            else:
+                min_value = value[0]
+        return min_value, max_value
+
 
 if __name__ == "__main__":
     Parser = Parser()
     # event_param = Parser.parse_event_search('max_price', 'https://www.99.co/id/cari/Rumah-dijual-di-Probolinggo%2C-Jawa-Timur-min-100jt-maks-5mily/location_probolinggo,%20jawa%20timur/listingType_sale/propertyType_house/radius_-1/harga_100000000,5000000000/certificationType_0/marketType_0')
     # event_param = Parser.parse_event_search('min_land_size', 'https://www.99.co/id/cari/tanah/dijual/yos-sudarso/MinLuasTanah_1500/Hlmn_3')
-    event_param = Parser.parse_event_search('min_building_size', 'https://www.99.co/id/cari/Rumah-dijual-di-Indonesia-min-10jt-maks-500jt/location_indonesia/harga_10000000,500000000/keywords_bu/buildingSize_50,/venueId_1006/marketType_0')
+    event_param = Parser.parse_event_search('sort_type', 'https://www.99.co/id/cari/Rumah-dijual-di-BTN-LINGKAR-PRATAMA-Mataram-Nusa-Tenggara-Barat/location_nusa%20tenggara%20barat,%20mataram/coordinate_-8.5769951,116.1004894:1000/radius_1000/longitude_116.1004894/latitude_-8.5769951/sort_9/page_3#main-search-container')
     print(event_param)
-    
