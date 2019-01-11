@@ -69,7 +69,7 @@ class AgentTracker:
         # Filter event category is like Agent
         agent_df = tracker_df\
             .filter(tracker_df[_CATEGORY].rlike('Agent'))\
-            .filter(tracker_df[_CATEGORY] != '')\
+            .filter(tracker_df[_REFERRAL] != '')\
             .withColumn(_NEW_REFERRAL, referral_udf(tracker_df[_REFERRAL]))
 
         agent_df.show(100)
